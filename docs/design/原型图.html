@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>测试平台 - 线框原型</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+    background:#f0f0f0; color:#333; font-size:13px;
+    display:flex; flex-direction:column; height:100vh; overflow:hidden;
+  }
+
+  /* ===== 顶部导航 ===== */
+  .topbar {
+    height:52px; background:#2b2f36; color:#e8e8e8; flex:0 0 auto;
+    display:flex; align-items:center; padding:0 16px; gap:16px;
+  }
+  .logo { font-size:16px; font-weight:bold; letter-spacing:1px; white-space:nowrap; }
+  .logo .dot { color:#7ab8ff; }
+  .global-search {
+    flex:1; max-width:420px; height:30px; background:#3a3f47; border:1px solid #4a505a;
+    border-radius:4px; display:flex; align-items:center; padding:0 10px; color:#9aa0aa;
+  }
+  .global-search .gs-icon { margin-right:8px; opacity:.7; }
+  .top-right { margin-left:auto; display:flex; align-items:center; gap:14px; }
+  .env-switch {
+    height:28px; background:#3a3f47; border:1px solid #4a505a; border-radius:4px;
+    display:flex; align-items:center; padding:0 10px; color:#c8cdd4; cursor:pointer;
+  }
+  .env-switch .env-dot { width:8px; height:8px; border-radius:50%; background:#4caf50; margin-right:6px; }
+  .notify-icon { font-size:16px; cursor:pointer; opacity:.85; }
+  .user { display:flex; align-items:center; gap:8px; cursor:pointer; }
+  .avatar {
+    width:30px; height:30px; border-radius:50%; background:#5b6b8c;
+    display:flex; align-items:center; justify-content:center; font-size:12px; color:#fff;
+  }
+
+  /* ===== 主体布局 ===== */
+  .main { flex:1; display:flex; overflow:hidden; }
+
+  /* ===== 左侧菜单 ===== */
+  .sidebar {
+    width:224px; flex:0 0 auto; background:#fff; border-right:1px solid #ddd;
+    overflow-y:auto; padding:8px 0;
+  }
+  .menu-item {
+    padding:9px 16px; cursor:pointer; color:#444; white-space:nowrap;
+    display:flex; align-items:center; justify-content:space-between;
+    border-left:3px solid transparent; user-select:none;
+  }
+  .menu-item:hover { background:#f2f5f9; }
+  .menu-item.active { background:#e8f0fb; color:#1a5fb4; border-left-color:#1a5fb4; font-weight:bold; }
+  .menu-parent .mi-arrow { font-size:10px; color:#999; transition:transform .15s; }
+  .menu-group.open .menu-parent .mi-arrow { transform:rotate(90deg); }
+  .menu-children { display:none; }
+  .menu-group.open .menu-children { display:block; }
+  .menu-child { padding-left:34px; font-size:12.5px; }
+  .menu-subgroup-title { padding:6px 16px 4px 22px; font-size:11px; color:#999; letter-spacing:.5px; }
+  .menu-subgroup .menu-child { padding-left:42px; }
+  .menu-sep { height:1px; background:#eee; margin:6px 12px; }
+
+  /* ===== 内容区 ===== */
+  .content { flex:1; overflow-y:auto; padding:16px 20px 40px; background:#f0f0f0; }
+  .page-head { margin-bottom:14px; }
+  .breadcrumb { font-size:12px; color:#888; margin-bottom:4px; }
+  .page-title { font-size:19px; font-weight:bold; color:#222; }
+
+  /* ===== 线框块 ===== */
+  .wf {
+    background:#fff; border:1px dashed #b5b5b5; border-radius:6px;
+    padding:12px 14px; margin-bottom:14px;
+  }
+  .wf-title { font-size:13px; font-weight:bold; color:#555; margin-bottom:8px; }
+  .wf-title .tag { font-weight:normal; color:#999; font-size:11px; margin-left:8px; }
+  .wf-note {
+    border:1px dashed #ccc; border-radius:4px; background:#fafafa;
+    padding:10px 12px; color:#777; font-size:12px; min-height:34px;
+  }
+  .wf-note.small { min-height:24px; padding:6px 10px; }
+
+  /* 按钮行 */
+  .btns { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+  .btn {
+    border:1px dashed #9aa; background:#f7f9fc; color:#556; border-radius:4px;
+    padding:5px 14px; font-size:12px; cursor:pointer;
+  }
+  .btn.primary { border-style:solid; border-color:#1a5fb4; color:#1a5fb4; background:#eef4fc; }
+
+  /* 统计卡片 */
+  .cards { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:14px; }
+  .card {
+    background:#fff; border:1px dashed #b5b5b5; border-radius:6px;
+    padding:16px; text-align:center;
+  }
+  .card-num { font-size:26px; font-weight:bold; color:#333; }
+  .card-label { font-size:12px; color:#888; margin-top:6px; }
+
+  /* 图表占位 */
+  .chart-ph {
+    height:150px; border:1px dashed #ccc; border-radius:4px; background:#fafafa;
+    display:flex; align-items:center; justify-content:center; color:#aaa; font-size:12px;
+  }
+  .chart-ph.tall { height:110px; }
+
+  /* 列表占位 */
+  .list-row {
+    border:1px dashed #e0e0e0; border-radius:4px; background:#fafafa;
+    padding:8px 12px; margin-bottom:6px; color:#666; font-size:12px;
+  }
+  .list-row:last-child { margin-bottom:0; }
+
+  /* 表格线框 */
+  .tbl { border:1px dashed #ccc; border-radius:4px; overflow:hidden; }
+  .tbl-head, .tbl-row { display:flex; }
+  .tbl-head { background:#f2f2f2; font-weight:bold; color:#555; }
+  .tbl-head span, .tbl-row span {
+    flex:1; padding:7px 10px; border-right:1px dashed #e0e0e0; overflow:hidden;
+    text-overflow:ellipsis; white-space:nowrap;
+  }
+  .tbl-head span:last-child, .tbl-row span:last-child { border-right:none; }
+  .tbl-row { border-top:1px dashed #eee; color:#777; }
+  .tbl-row span { color:#bbb; }
+
+  /* 工具菜单 tab */
+  .tool-tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+  .tool-tab {
+    border:1px dashed #9aa; background:#f7f9fc; color:#556; border-radius:4px;
+    padding:6px 14px; font-size:12px; cursor:pointer;
+  }
+  .tool-tab.active { border-style:solid; border-color:#1a5fb4; color:#1a5fb4; background:#eef4fc; font-weight:bold; }
+  .tool-panel { display:none; }
+  .tool-panel.active { display:block; }
+
+  /* 页面切换 */
+  .page { display:none; }
+  .page.active { display:block; }
+
+  /* 页脚 */
+  .footer { text-align:center; color:#aaa; font-size:11px; padding:10px 0 4px; }
+</style>
+</head>
+<body>
+
+<!-- ===== 顶部导航 ===== -->
+<div class="topbar">
+  <div class="logo">测试平台<span class="dot">·</span>Wireframe</div>
+  <div class="global-search"><span class="gs-icon">🔍</span>全局搜索：用例 / 报告 / 数据源 / 执行历史…</div>
+  <div class="top-right">
+    <div class="env-switch"><span class="env-dot"></span>环境：test ▾</div>
+    <div class="notify-icon">🔔</div>
+    <div class="user"><div class="avatar">测</div><span>测试员</span></div>
+  </div>
+</div>
+
+<!-- ===== 主体 ===== -->
+<div class="main">
+  <!-- 左侧菜单 -->
+  <div class="sidebar" id="menu"></div>
+
+  <!-- 右侧内容区 -->
+  <div class="content">
+    <div class="page-head">
+      <div class="breadcrumb" id="breadcrumb">工作台</div>
+      <div class="page-title" id="page-title">工作台</div>
+    </div>
+    <div id="pages"></div>
+    <div class="footer">线框原型 v1.0，基于需求文档 v1.5 生成</div>
+  </div>
+</div>
+
+<script>
+/* ================= 菜单定义（16 个模块） ================= */
+var MENU = [
+  { id:'dashboard', label:'工作台' },
+  { id:'g-data', label:'数据查询', children:[
+    { group:'日志查询', children:[
+      { id:'log-search', label:'日志检索' },
+      { id:'log-alert', label:'异常告警规则' }
+    ]},
+    { group:'数据库查询', children:[
+      { id:'db-source', label:'数据源管理' },
+      { id:'db-sql', label:'SQL 编辑器' },
+      { id:'db-history', label:'执行记录' }
+    ]},
+    { id:'redis', label:'Redis 查询' }
+  ]},
+  { id:'g-test', label:'测试管理', children:[
+    { group:'接口测试', children:[
+      { id:'api-cases', label:'用例管理' },
+      { id:'api-run', label:'执行' },
+      { id:'api-history', label:'历史' },
+      { id:'api-openapi', label:'OpenAPI导入' },
+      { id:'api-script', label:'前后置脚本' }
+    ]},
+    { group:'性能测试', children:[
+      { id:'perf-scene', label:'场景配置' },
+      { id:'perf-monitor', label:'实时监控' },
+      { id:'perf-sla', label:'基线SLA' }
+    ]},
+    { group:'用例管理', children:[
+      { id:'tc-library', label:'用例库' },
+      { id:'tc-tag', label:'标签版本' }
+    ]},
+    { id:'bug', label:'缺陷管理' }
+  ]},
+  { id:'g-tools', label:'测试工具', children:[
+    { group:'工具集', children:[
+      { id:'tools-json', label:'JSON', tab:'json' },
+      { id:'tools-crypto', label:'加解密', tab:'crypto' },
+      { id:'tools-ts', label:'时间戳', tab:'ts' },
+      { id:'tools-regex', label:'正则', tab:'regex' },
+      { id:'tools-url', label:'URL', tab:'url' },
+      { id:'tools-random', label:'随机数据', tab:'random' },
+      { id:'tools-qr', label:'二维码', tab:'qr' },
+      { id:'tools-ext', label:'扩展工具', tab:'ext' }
+    ]},
+    { id:'mock', label:'Mock 服务' },
+    { id:'df', label:'数据工厂' }
+  ]},
+  { id:'g-env', label:'测试环境', children:[
+    { group:'环境管理', children:[
+      { id:'env-config', label:'环境配置' },
+      { id:'env-health', label:'健康自检' },
+      { id:'env-center', label:'配置中心' }
+    ]}
+  ]},
+  { id:'g-report', label:'报告与协作', children:[
+    { group:'测试报告', children:[
+      { id:'rep-daily', label:'测试日报' },
+      { id:'rep-version', label:'版本报告' },
+      { id:'rep-period', label:'周报月报' }
+    ]},
+    { group:'报告中心', children:[
+      { id:'rep-archive', label:'报告归档' },
+      { id:'rep-compare', label:'历史对比' }
+    ]}
+  ]},
+  { id:'g-ops', label:'调度与通知', children:[
+    { group:'任务调度', children:[
+      { id:'sch-task', label:'定时任务' },
+      { id:'sch-ci', label:'CI集成' },
+      { id:'sch-history', label:'执行历史' }
+    ]},
+    { group:'通知中心', children:[
+      { id:'not-channel', label:'通知渠道' },
+      { id:'not-rule', label:'规则' },
+      { id:'not-record', label:'记录' }
+    ]}
+  ]}
+];
+
+/* ================= 页面数据（功能块与需求文档对应） ================= */
+var PAGES = {
+
+  /* ---- 工作台 ---- */
+  dashboard: { title:'工作台', breadcrumb:['工作台'], blocks:[
+    { t:'cards', items:['用例总数','执行次数','通过率','缺陷数'] },
+    { t:'chart', title:'近 7 天执行趋势（执行量 / 通过率）' },
+    { t:'list', title:'任务动态', items:['定时任务执行状态（成功 / 失败 / 运行中）','失败用例提醒','待处理缺陷提醒'] },
+    { t:'list', title:'环境状态', items:['dev 环境：数据源 / 日志源 / Redis 连接状态','test 环境：数据源 / 日志源 / Redis 连接状态','prod 环境：数据源 / 日志源 / Redis 连接状态'] },
+    { t:'box', title:'快捷入口', note:'新建用例 / 发起压测 / 查日志 / 查数据库 / 造数' }
+  ]},
+
+  /* ---- 日志查询 ---- */
+  'log-search': { title:'日志检索', breadcrumb:['日志查询','日志检索'], blocks:[
+    { t:'box', title:'数据源选择', note:'ELK / Loki / 文件日志 / 云日志服务（阿里云 SLS 等）' },
+    { t:'box', title:'检索条件区', note:'关键字搜索框（支持 AND/OR/NOT 与通配符）· 时间范围（相对/绝对）· 日志级别（DEBUG/INFO/WARN/ERROR）· 服务名 · 实例 IP' },
+    { t:'box', title:'我的查询', note:'常用检索条件保存，一键复用' },
+    { t:'table', title:'检索结果', headers:['时间','级别','服务名','实例IP','日志内容','操作'], rows:4 },
+    { t:'box', title:'日志详情', note:'点击单条日志查看完整内容（展开/收起/复制）· 上下文查看（traceId 关联前后 N 条）' },
+    { t:'btns', labels:['导出 CSV','导出文本'] }
+  ]},
+  'log-alert': { title:'异常告警规则', breadcrumb:['日志查询','异常告警规则'], blocks:[
+    { t:'table', title:'告警规则列表', headers:['规则名称','监控关键字','阈值','通知渠道','状态','操作'], rows:4 },
+    { t:'box', title:'新建 / 编辑规则', note:'关键字监控（如 ERROR 突增、指定异常码）· 阈值设置 · 对接通知中心' },
+    { t:'list', title:'触发记录', items:['规则触发时间 / 命中日志数 / 通知结果'] }
+  ]},
+
+  /* ---- 数据库查询 ---- */
+  'db-source': { title:'数据源管理', breadcrumb:['数据库查询','数据源管理'], blocks:[
+    { t:'table', title:'数据源列表', headers:['名称','类型','地址','只读标记','状态','操作'], rows:4 },
+    { t:'box', title:'新建 / 编辑数据源', note:'MySQL / PostgreSQL / Oracle / SQL Server · 连接串 · 账号 · 超时 · 只读开关' },
+    { t:'box', title:'连接安全', note:'账号密码加密存储 · 只读数据源禁止执行写操作' }
+  ]},
+  'db-sql': { title:'SQL 编辑器', breadcrumb:['数据库查询','SQL 编辑器'], blocks:[
+    { t:'box', title:'SQL 编辑器', note:'语法高亮 · 自动补全 · 格式化 · 多语句执行' },
+    { t:'box', title:'执行控制', note:'查询超时设置 · 危险语句（DELETE/UPDATE/DDL）二次确认 · 只读模式' },
+    { t:'table', title:'查询结果', headers:['列1','列2','列3','列4','列5'], rows:4 },
+    { t:'box', title:'写操作影响预览', note:'DELETE/UPDATE 执行前预览影响行数及受影响数据 · 自动备份受影响行（配合审批流）' },
+    { t:'btns', labels:['执行','格式化','导出 Excel','导出 CSV','收藏 SQL'] }
+  ]},
+  'db-history': { title:'执行记录', breadcrumb:['数据库查询','执行记录'], blocks:[
+    { t:'table', title:'执行历史（审计）', headers:['执行人','时间','数据源','SQL 摘要','耗时','状态'], rows:5 },
+    { t:'box', title:'审计说明', note:'记录谁、何时、执行了什么 SQL，供审计追溯' }
+  ]},
+
+  /* ---- Redis 查询 ---- */
+  redis: { title:'Redis 查询', breadcrumb:['Redis 查询'], blocks:[
+    { t:'box', title:'连接管理', note:'单机 / 集群 / Sentinel 模式连接配置' },
+    { t:'box', title:'Key 浏览', note:'按 db 分库展示 Key 列表 · 前缀搜索 · 模糊匹配' },
+    { t:'box', title:'类型识别与数据查看', note:'自动识别类型：String / Hash / List / Set / ZSet · 大 Key 分页加载' },
+    { t:'box', title:'数据操作', note:'修改 / 删除 Key（受权限控制，默认只读）· 操作审计日志' },
+    { t:'box', title:'命令执行', note:'常用命令：TTL / EXPIRE / DEL 等' }
+  ]},
+
+  /* ---- 接口测试 ---- */
+  'api-cases': { title:'用例管理', breadcrumb:['接口测试','用例管理'], blocks:[
+    { t:'box', title:'集合 - 目录 - 用例三层结构', note:'支持复制、移动、批量操作' },
+    { t:'box', title:'请求配置', note:'GET/POST/PUT/DELETE/PATCH · URL · Headers · Query · Body（JSON/Form/raw）' },
+    { t:'box', title:'认证配置', note:'Basic / Bearer Token / Cookie · Token 可关联登录接口自动获取' },
+    { t:'box', title:'变量体系', note:'环境变量（按环境区分）· 全局变量 · 用例内变量 · 从响应提取变量（JSONPath/正则）' },
+    { t:'box', title:'断言配置', note:'状态码 · 响应体包含/相等 · JSONPath 取值 · 正则断言（多条 AND 关系）' },
+    { t:'btns', labels:['保存','复制','移动','批量操作'] }
+  ]},
+  'api-run': { title:'执行', breadcrumb:['接口测试','执行'], blocks:[
+    { t:'box', title:'执行配置', note:'选择环境 · 单个 / 批量执行' },
+    { t:'table', title:'执行结果', headers:['用例','状态','耗时','断言结果','操作'], rows:5 },
+    { t:'box', title:'请求响应详情', note:'记录请求响应详情 · 支持历史回放' },
+    { t:'box', title:'测试报告汇总', note:'按集合/目录汇总：通过率 · 耗时统计 · 导出' }
+  ]},
+  'api-history': { title:'历史', breadcrumb:['接口测试','历史'], blocks:[
+    { t:'table', title:'执行历史', headers:['时间','集合','环境','通过率','状态','操作'], rows:5 },
+    { t:'box', title:'历史回放', note:'查看历史执行详情并重新执行' }
+  ]},
+  'api-openapi': { title:'OpenAPI导入', breadcrumb:['接口测试','OpenAPI导入'], blocks:[
+    { t:'box', title:'导入配置', note:'上传 OpenAPI 2.0 / 3.0（Swagger）文档 · 自动解析请求参数与数据结构' },
+    { t:'table', title:'解析结果预览', headers:['接口','方法','路径','参数','生成状态'], rows:4 },
+    { t:'btns', labels:['一键导入','取消'] }
+  ]},
+  'api-script': { title:'前后置脚本', breadcrumb:['接口测试','前后置脚本'], blocks:[
+    { t:'box', title:'Pre-request 脚本（JS）', note:'签名计算 · 动态参数生成' },
+    { t:'box', title:'后置处理脚本（JS）', note:'响应数据处理 · 变量提取' },
+    { t:'box', title:'脚本调试区', note:'运行日志与调试输出' }
+  ]},
+
+  /* ---- 性能测试 ---- */
+  'perf-scene': { title:'场景配置', breadcrumb:['性能测试','场景配置'], blocks:[
+    { t:'box', title:'压测场景配置', note:'基于接口用例创建 · 并发用户数 · 持续时间 · Ramp-up' },
+    { t:'box', title:'参数化', note:'CSV 数据文件参数化 · 变量引用' },
+    { t:'box', title:'执行方式', note:'单机执行 · 大规模压测支持分布式执行（后续规划）' }
+  ]},
+  'perf-monitor': { title:'实时监控', breadcrumb:['性能测试','实时监控'], blocks:[
+    { t:'chart', title:'TPS 实时曲线' },
+    { t:'chart', title:'响应时间（平均 / 最大）' },
+    { t:'chart', title:'错误率' },
+    { t:'box', title:'实时指标', note:'并发数 · 当前 TPS · 平均响应时间 · 错误率' },
+    { t:'btns', labels:['开始压测','停止'] }
+  ]},
+  'perf-sla': { title:'基线SLA', breadcrumb:['性能测试','基线SLA'], blocks:[
+    { t:'box', title:'性能基线 / SLA 阈值', note:'TPS · P95 响应时间 · 错误率阈值设置 · 超限自动告警（对接通知中心）' },
+    { t:'box', title:'结果报告', note:'聚合报告 · 响应时间分布图 · 错误统计 · 历史对比' },
+    { t:'btns', labels:['导出 PDF','导出 HTML'] }
+  ]},
+
+  /* ---- 工具菜单（8 个 tab） ---- */
+  tools: { title:'工具菜单', breadcrumb:['工具菜单'], tabs:[
+    { id:'json', label:'JSON 工具', blocks:[
+      { t:'box', title:'JSON 输入区', note:'粘贴 JSON 文本' },
+      { t:'btns', labels:['格式化','压缩','校验','对比'] },
+      { t:'box', title:'输出区', note:'格式化 / 压缩 / 校验 / 对比结果展示' }
+    ]},
+    { id:'crypto', label:'加解密', blocks:[
+      { t:'box', title:'算法选择', note:'MD5 · SHA 系列 · Base64 · AES · RSA（加解密 / 签名验签）' },
+      { t:'box', title:'输入区', note:'明文 / 密文 / 密钥输入' },
+      { t:'btns', labels:['加密','解密','签名','验签'] },
+      { t:'box', title:'输出区', note:'结果展示' }
+    ]},
+    { id:'ts', label:'时间戳转换', blocks:[
+      { t:'box', title:'时间戳与日期互转', note:'支持多种格式' },
+      { t:'btns', labels:['转换','复制结果'] },
+      { t:'box', title:'输出区', note:'转换结果展示' }
+    ]},
+    { id:'regex', label:'正则测试', blocks:[
+      { t:'box', title:'正则表达式输入', note:'在线测试' },
+      { t:'box', title:'测试文本输入', note:'实时高亮匹配结果' },
+      { t:'btns', labels:['测试','清空'] },
+      { t:'box', title:'匹配结果', note:'匹配项列表与高亮展示' }
+    ]},
+    { id:'url', label:'URL 编解码', blocks:[
+      { t:'box', title:'URL 输入区', note:'编码 / 解码' },
+      { t:'box', title:'Query 参数解析', note:'自动解析参数列表' },
+      { t:'btns', labels:['编码','解码','解析'] }
+    ]},
+    { id:'random', label:'随机数据生成', blocks:[
+      { t:'box', title:'数据类型选择', note:'身份证 / 手机号 / 邮箱 / UUID / 随机字符串' },
+      { t:'box', title:'生成数量与规则', note:'指定数量 · 长度 · 格式' },
+      { t:'btns', labels:['生成','复制全部'] },
+      { t:'box', title:'生成结果', note:'批量生成结果展示' }
+    ]},
+    { id:'qr', label:'二维码工具', blocks:[
+      { t:'box', title:'二维码生成', note:'输入内容生成二维码' },
+      { t:'box', title:'二维码解析', note:'上传图片解析内容' },
+      { t:'btns', labels:['生成','解析'] }
+    ]},
+    { id:'ext', label:'扩展工具', blocks:[
+      { t:'box', title:'可插拔工具结构', note:'工具菜单采用可插拔结构，后续可低成本新增工具' },
+      { t:'box', title:'已安装扩展列表', note:'扩展工具占位' }
+    ]}
+  ]},
+  'tools-json':   { title:'JSON 工具', breadcrumb:['工具菜单','JSON'], tab:'json' },
+  'tools-crypto': { title:'加解密', breadcrumb:['工具菜单','加解密'], tab:'crypto' },
+  'tools-ts':     { title:'时间戳转换', breadcrumb:['工具菜单','时间戳'], tab:'ts' },
+  'tools-regex':  { title:'正则测试', breadcrumb:['工具菜单','正则'], tab:'regex' },
+  'tools-url':    { title:'URL 编解码', breadcrumb:['工具菜单','URL'], tab:'url' },
+  'tools-random': { title:'随机数据生成', breadcrumb:['工具菜单','随机数据'], tab:'random' },
+  'tools-qr':     { title:'二维码工具', breadcrumb:['工具菜单','二维码'], tab:'qr' },
+  'tools-ext':    { title:'扩展工具', breadcrumb:['工具菜单','扩展工具'], tab:'ext' },
+
+  /* ---- 用例管理 ---- */
+  'tc-library': { title:'用例库', breadcrumb:['用例管理','用例库'], blocks:[
+    { t:'box', title:'用例库分类', note:'接口用例 · 性能用例 · 数据库用例 · 通用用例' },
+    { t:'table', title:'用例列表', headers:['用例名称','类型','标签','版本','通过率','操作'], rows:5 },
+    { t:'box', title:'用例详情预览', note:'请求信息 · 断言 · 参数配置预览' },
+    { t:'box', title:'导入导出', note:'从 Postman 等工具导入 · 导出 JSON / Excel' },
+    { t:'box', title:'模块联动', note:'接口测试、性能测试模块可直接引用 / 执行用例库中的用例，执行结果回写用例' }
+  ]},
+  'tc-tag': { title:'标签版本', breadcrumb:['用例管理','标签版本'], blocks:[
+    { t:'box', title:'标签管理', note:'模块 / 版本 / 优先级标签 · 按标签筛选' },
+    { t:'table', title:'版本历史', headers:['版本号','修改人','时间','变更记录','操作'], rows:4 },
+    { t:'box', title:'版本回滚', note:'用例修改留痕，可查看历史版本与变更记录，支持回滚' }
+  ]},
+
+  /* ---- 环境管理 ---- */
+  'env-config': { title:'环境配置', breadcrumb:['环境管理','环境配置'], blocks:[
+    { t:'box', title:'环境列表', note:'dev / test / prod · 自定义名称与标识' },
+    { t:'box', title:'配置项管理', note:'接口 BaseURL · 数据库连接 · 日志源 · Redis 连接（按环境统一管理）' },
+    { t:'box', title:'环境变量', note:'token · 公共参数（接口测试等模块可引用）' },
+    { t:'box', title:'配置复制', note:'从已有环境复制配置生成新环境（如 test 复制自 dev）' },
+    { t:'box', title:'配置审计', note:'环境配置变更记录操作人与时间' }
+  ]},
+  'env-health': { title:'健康自检', breadcrumb:['环境管理','健康自检'], blocks:[
+    { t:'table', title:'连接状态检测', headers:['资源类型','名称','状态','延迟','诊断提示'], rows:5 },
+    { t:'btns', labels:['一键检测','重新检测'] }
+  ]},
+  'env-center': { title:'配置中心', breadcrumb:['环境管理','配置中心'], blocks:[
+    { t:'box', title:'配置中心集成', note:'对接 Nacos / Consul，自动获取服务地址（进阶，按需）' },
+    { t:'box', title:'同步状态', note:'配置中心连接状态与最近同步时间' }
+  ]},
+
+  /* ---- 测试报告中心 ---- */
+  'rep-archive': { title:'报告归档', breadcrumb:['测试报告中心','报告归档'], blocks:[
+    { t:'box', title:'报告筛选', note:'按类型（接口/性能）· 时间 · 环境 · 执行人筛选' },
+    { t:'table', title:'报告列表', headers:['类型','报告名称','环境','执行人','时间','通过率','操作'], rows:5 },
+    { t:'box', title:'报告详情', note:'通过率 · 耗时 · 失败用例明细 · 图表' },
+    { t:'box', title:'分享与导出', note:'生成分享链接（带权限校验）· 导出 PDF / HTML / Excel' }
+  ]},
+  'rep-compare': { title:'历史对比', breadcrumb:['测试报告中心','历史对比'], blocks:[
+    { t:'chart', title:'历史执行趋势对比（同一用例 / 场景）' },
+    { t:'table', title:'对比明细', headers:['版本','通过率','耗时','性能指标','结论'], rows:4 },
+    { t:'box', title:'趋势分析', note:'识别性能劣化与回归' }
+  ]},
+
+  /* ---- 测试报告（日报 / 版本） ---- */
+  'rep-daily': { title:'测试日报', breadcrumb:['测试报告','测试日报'], blocks:[
+    { t:'box', title:'日报生成', note:'每日自动汇总当日测试数据：执行用例数 · 通过率 · 缺陷数 · 压测结果' },
+    { t:'box', title:'日报编辑', note:'人工补充当日重点问题 · 风险说明 · 次日计划后确认发布' },
+    { t:'box', title:'日报模板', note:'默认章节：测试概况 · 执行统计 · 缺陷情况 · 遗留问题 · 明日计划（可配置）' },
+    { t:'table', title:'日报历史', headers:['日期','执行用例数','通过率','缺陷数','状态','操作'], rows:4 },
+    { t:'btns', labels:['推送（邮件/钉钉/企微）','导出 Word','导出 PDF'] }
+  ]},
+  'rep-version': { title:'版本报告', breadcrumb:['测试报告','版本报告'], blocks:[
+    { t:'box', title:'报告创建', note:'按版本（如 v1.2.0）创建，关联该版本的用例执行 · 缺陷 · 压测数据' },
+    { t:'box', title:'报告内容章节', note:'测试范围 · 环境信息 · 用例执行统计 · 缺陷统计（按严重级别）· 性能结果 · 风险评估 · 测试结论与上线建议' },
+    { t:'box', title:'数据自动汇总', note:'关联的接口/性能测试执行结果、缺陷数据自动汇总填充，支持手工修正' },
+    { t:'box', title:'报告模板', note:'支持多套模板（敏捷迭代版 / 发版版）' },
+    { t:'table', title:'报告归档', headers:['版本','报告名称','发布时间','状态','操作'], rows:4 },
+    { t:'btns', labels:['导出 Word','导出 PDF','推送分享'] }
+  ]},
+  'rep-period': { title:'周报月报', breadcrumb:['测试报告','周报月报'], blocks:[
+    { t:'box', title:'周报 / 月报自动汇总', note:'按周/月自动汇总测试数据（自动汇总 + 人工补充），作为日报的周期聚合' },
+    { t:'box', title:'人工补充编辑', note:'补充周期内重点问题与风险说明' },
+    { t:'table', title:'历史列表', headers:['周期','类型','执行用例数','通过率','状态','操作'], rows:4 }
+  ]},
+
+  /* ---- 任务调度 ---- */
+  'sch-task': { title:'定时任务', breadcrumb:['任务调度','定时任务'], blocks:[
+    { t:'table', title:'任务列表', headers:['任务名称','执行对象','环境','调度规则','状态','操作'], rows:4 },
+    { t:'box', title:'任务配置', note:'执行对象（用例集合 / 压测场景 / SQL 巡检项）· 执行环境 · 调度规则（cron / 频率）' },
+    { t:'box', title:'启停控制', note:'启用 / 暂停 / 立即执行一次' },
+    { t:'box', title:'SQL 巡检', note:'配置巡检 SQL（如异常数据检测），结果异常时告警' },
+    { t:'box', title:'失败通知', note:'任务失败或结果不达标时触发通知（对接通知中心）' }
+  ]},
+  'sch-ci': { title:'CI集成', breadcrumb:['任务调度','CI集成'], blocks:[
+    { t:'box', title:'CI 触发配置', note:'Webhook / 开放 API 接收触发（代码提交、合并请求、构建完成）· 选择用例集合 · 质量门禁阈值（如通过率 ≥ 98%）' },
+    { t:'box', title:'CI Token 管理', note:'生成 / 吊销 · 有效期 · 允许触发来源（特定 CI 服务地址）· Token / 签名认证' },
+    { t:'box', title:'对接示例', note:'Jenkins · GitLab CI · GitHub Actions 流水线调用示例' },
+    { t:'table', title:'构建关联记录', headers:['构建号','提交号','触发来源','执行记录','报告','状态'], rows:4 }
+  ]},
+  'sch-history': { title:'执行历史', breadcrumb:['任务调度','执行历史'], blocks:[
+    { t:'table', title:'任务执行历史', headers:['任务','触发方式','时间','状态','耗时','结果'], rows:5 },
+    { t:'box', title:'结果归档', note:'执行结果自动归档到测试报告中心' }
+  ]},
+
+  /* ---- 通知中心 ---- */
+  'not-channel': { title:'通知渠道', breadcrumb:['通知中心','通知渠道'], blocks:[
+    { t:'table', title:'渠道列表', headers:['渠道','类型','配置状态','最近发送','操作'], rows:4 },
+    { t:'box', title:'渠道配置', note:'邮件（SMTP）· 钉钉机器人 · 企微机器人 · Webhook 地址' }
+  ]},
+  'not-rule': { title:'规则', breadcrumb:['通知中心','规则'], blocks:[
+    { t:'table', title:'规则列表', headers:['规则名称','触发场景','条件','通知对象','状态','操作'], rows:4 },
+    { t:'box', title:'规则配置', note:'触发场景：压测完成 · 任务失败 · 用例通过率低于阈值等' },
+    { t:'box', title:'频率控制', note:'防止告警风暴：通知聚合 · 静默时段配置' }
+  ]},
+  'not-record': { title:'记录', breadcrumb:['通知中心','记录'], blocks:[
+    { t:'table', title:'通知记录', headers:['时间','渠道','内容','状态','操作'], rows:5 },
+    { t:'box', title:'失败重发', note:'发送失败的通知支持重发' }
+  ]},
+
+  /* ---- Mock 服务 ---- */
+  mock: { title:'Mock 服务', breadcrumb:['Mock 服务'], blocks:[
+    { t:'table', title:'Mock 接口列表', headers:['路径','Method','匹配条件','状态','开关','操作'], rows:4 },
+    { t:'box', title:'Mock 接口配置', note:'请求匹配条件 · 响应数据 / 状态码 / 延迟' },
+    { t:'box', title:'动态 Mock', note:'脚本逻辑（JS/Python）· 数据模板生成动态响应' },
+    { t:'box', title:'开关控制', note:'Mock 接口独立启停 · 一键关闭全部 Mock' },
+    { t:'table', title:'访问日志', headers:['时间','调用方','请求','返回数据'], rows:3 },
+    { t:'box', title:'与用例联动', note:'接口测试可切换指向 Mock 服务，验证失败场景（异常返回、超时）' }
+  ]},
+
+  /* ---- 数据工厂 ---- */
+  df: { title:'数据工厂', breadcrumb:['数据工厂'], blocks:[
+    { t:'box', title:'造数模板', note:'目标环境 + 方式（调用接口序列 / 执行 SQL）+ 参数化字段' },
+    { t:'box', title:'造数执行', note:'按模板执行 · 指定数量批量生成 · 展示执行结果' },
+    { t:'box', title:'数据清理', note:'清理由造数产生的测试数据，避免环境污染' },
+    { t:'table', title:'造数历史', headers:['任务','模板','时间','生成数量','状态','操作'], rows:4 },
+    { t:'box', title:'常用数据生成', note:'结合工具菜单的随机数据生成能力，作为造数参数来源' }
+  ]},
+
+  /* ---- 缺陷管理 ---- */
+  bug: { title:'缺陷管理', breadcrumb:['缺陷管理'], blocks:[
+    { t:'box', title:'系统对接', note:'对接禅道 / Jira（API 方式），可配置连接' },
+    { t:'box', title:'一键提单', note:'接口测试用例失败时一键创建缺陷，自动携带请求 / 响应 / 断言信息' },
+    { t:'table', title:'缺陷列表', headers:['编号','标题','严重级别','状态','来源','操作'], rows:5 },
+    { t:'box', title:'缺陷同步', note:'同步缺陷状态（新建 / 处理中 / 已关闭）回平台展示' }
+  ]}
+};
+
+/* ================= 渲染 ================= */
+function renderBlocks(blocks){
+  return blocks.map(function(b){
+    switch(b.t){
+      case 'cards':
+        return '<div class="cards">' + b.items.map(function(i){
+          return '<div class="card"><div class="card-num">—</div><div class="card-label">' + i + '</div></div>';
+        }).join('') + '</div>';
+      case 'chart':
+        return '<div class="wf"><div class="wf-title">' + b.title + '</div><div class="chart-ph">图表占位</div></div>';
+      case 'list':
+        return '<div class="wf"><div class="wf-title">' + b.title + '</div>' +
+          b.items.map(function(i){ return '<div class="list-row">' + i + '</div>'; }).join('') + '</div>';
+      case 'box':
+        return '<div class="wf"><div class="wf-title">' + b.title + '</div><div class="wf-note">' + (b.note || '') + '</div></div>';
+      case 'table':
+        return '<div class="wf"><div class="wf-title">' + b.title + '</div><div class="tbl">' +
+          '<div class="tbl-head">' + b.headers.map(function(h){ return '<span>' + h + '</span>'; }).join('') + '</div>' +
+          Array.from({length:b.rows}, function(){ return '<div class="tbl-row">' + b.headers.map(function(){ return '<span>—</span>'; }).join('') + '</div>'; }).join('') +
+          '</div></div>';
+      case 'btns':
+        return '<div class="btns">' + b.labels.map(function(l){ return '<span class="btn">' + l + '</span>'; }).join('') + '</div>';
+    }
+    return '';
+  }).join('');
+}
+
+function renderMenuItem(c){
+  if(c.group){
+    return '<div class="menu-subgroup-title">' + c.group + '</div>' +
+      '<div class="menu-subgroup">' + c.children.map(renderMenuItem).join('') + '</div>';
+  }
+  return '<div class="menu-item menu-child" data-id="' + c.id + '"' +
+    (c.tab ? ' data-tab="' + c.tab + '"' : '') + '>' + c.label + '</div>';
+}
+
+function renderMenu(){
+  var el = document.getElementById('menu');
+  el.innerHTML = MENU.map(function(g){
+    if(g.children){
+      var first = g.children[0];
+      var firstId = first.id || (first.children && first.children[0].id) || '';
+      return '<div class="menu-group" data-group="' + g.id + '">' +
+        '<div class="menu-item menu-parent" data-id="' + firstId + '">' +
+          '<span>' + g.label + '</span><span class="mi-arrow">▸</span>' +
+        '</div>' +
+        '<div class="menu-children">' +
+          g.children.map(renderMenuItem).join('') +
+        '</div></div>';
+    }
+    return '<div class="menu-item" data-id="' + g.id + '">' + g.label + '</div>';
+  }).join('');
+}
+
+function renderPages(){
+  var container = document.getElementById('pages');
+  var html = '';
+  Object.keys(PAGES).forEach(function(id){
+    var p = PAGES[id];
+    if(p.tab) return; // 工具 tab 导航项不单独渲染
+    if(p.tabs){ // 工具菜单：tab 容器
+      html += '<section class="page" id="page-' + id + '">' +
+        '<div class="tool-tabs">' + p.tabs.map(function(t){
+          return '<span class="tool-tab" data-tab="' + t.id + '">' + t.label + '</span>';
+        }).join('') + '</div>' +
+        p.tabs.map(function(t){
+          return '<div class="tool-panel" data-panel="' + t.id + '">' + renderBlocks(t.blocks) + '</div>';
+        }).join('') + '</section>';
+    } else {
+      html += '<section class="page" id="page-' + id + '">' + renderBlocks(p.blocks) + '</section>';
+    }
+  });
+  container.innerHTML = html;
+}
+
+/* ================= 交互 ================= */
+function showPage(id){
+  var meta = PAGES[id] || PAGES['dashboard'];
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+
+  if(meta.tab){
+    // 工具菜单：显示 tools section 并激活对应 tab
+    document.getElementById('page-tools').classList.add('active');
+    document.querySelectorAll('.tool-tab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelector('.tool-tab[data-tab="' + meta.tab + '"]').classList.add('active');
+    document.querySelectorAll('.tool-panel').forEach(function(p){ p.classList.remove('active'); });
+    document.querySelector('.tool-panel[data-panel="' + meta.tab + '"]').classList.add('active');
+  } else {
+    document.getElementById('page-' + id).classList.add('active');
+  }
+
+  document.getElementById('breadcrumb').textContent = meta.breadcrumb.join(' / ');
+  document.getElementById('page-title').textContent = meta.title;
+
+  document.querySelectorAll('.menu-item').forEach(function(m){ m.classList.remove('active'); });
+  var item = document.querySelector('.menu-item[data-id="' + id + '"]');
+  if(item){
+    item.classList.add('active');
+    var group = item.closest('.menu-group');
+    if(group) group.classList.add('open');
+  }
+  document.querySelector('.content').scrollTop = 0;
+}
+
+/* 工具 tab 点击 */
+document.addEventListener('click', function(e){
+  var tab = e.target.closest('.tool-tab');
+  if(tab){
+    document.querySelectorAll('.tool-tab').forEach(function(t){ t.classList.remove('active'); });
+    tab.classList.add('active');
+    var id = tab.dataset.tab;
+    document.querySelectorAll('.tool-panel').forEach(function(p){ p.classList.remove('active'); });
+    document.querySelector('.tool-panel[data-panel="' + id + '"]').classList.add('active');
+    return;
+  }
+  var item = e.target.closest('.menu-item');
+  if(item){
+    var group = item.closest('.menu-group');
+    if(item.classList.contains('menu-parent') && group){
+      group.classList.toggle('open');
+    }
+    showPage(item.dataset.id);
+  }
+});
+
+/* ================= 初始化 ================= */
+renderMenu();
+renderPages();
+showPage('dashboard');
+</script>
+</body>
+</html>
