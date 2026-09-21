@@ -27,10 +27,19 @@ export const routes = [
         meta: { title: '工作台', perm: 'dashboard:view' },
       },
       {
+        // 工具菜单（REQ-004）：/tool 重定向到首个工具，子路由 /tool/:key 由注册表驱动
         path: 'tool',
         name: 'Tool',
-        component: () => import('@/views/tool/index.vue'),
+        redirect: '/tool/json',
         meta: { title: '工具菜单', perm: 'tool:view' },
+        children: [
+          {
+            path: ':key',
+            name: 'ToolPage',
+            component: () => import('@/views/tool/ToolPage.vue'),
+            meta: { title: '工具', perm: 'tool:view' },
+          },
+        ],
       },
       {
         path: 'env',

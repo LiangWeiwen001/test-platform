@@ -8,14 +8,19 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { hasPerm } from '@/utils/permission'
+import { tools } from '@/utils/tools'
 
 const route = useRoute()
 const userStore = useUserStore()
 
-/** 菜单配置：path + 标题 + 所需权限码 */
+/** 菜单配置：path + 标题 + 所需权限码（工具菜单子项由注册表 tools 生成） */
 const menuConfig = [
   { path: '/dashboard', title: '工作台', perm: 'dashboard:view' },
-  { path: '/tool', title: '工具菜单', perm: 'tool:view' },
+  {
+    title: '工具菜单',
+    perm: 'tool:view',
+    children: tools.map((t) => ({ path: t.path, title: t.name, perm: 'tool:view' })),
+  },
   { path: '/env', title: '环境管理', perm: 'env:env:list' },
   { path: '/case', title: '用例管理', perm: 'case:case:list' },
   {
