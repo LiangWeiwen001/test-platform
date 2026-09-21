@@ -1,8 +1,18 @@
 <script setup>
+/**
+ * 登录页（REQ-002）
+ * 登录成功后保存 token + 用户信息，并跳转工作台（或 redirect 指定页）
+ * 错误信息由 api/request.js 拦截器统一用 ElMessage 提示后端 message
+ */
 import { reactive, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { useUserStore } from '@/store/user'
 
-// 骨架：完整登录逻辑（调用 auth API、存 token、跳转）由 TASK-004 实现
+const route = useRoute()
+const router = useRouter()
+const userStore = useUserStore()
+
 const formRef = ref(null)
 const loading = ref(false)
 const form = reactive({
@@ -17,13 +27,20 @@ const rules = {
 
 async function handleLogin() {
   if (!formRef.value) return
-  await formRef.value.validate((valid) => {
-    if (!valid) return
-    loading.value = true
-    // TODO(TASK-004)：调用 login API 保存 token 并跳转首页
-    ElMessage.info('登录功能将在 TASK-004 接入')
+  const valid = await formRef.value.validate().catch(() => false)
+  if (!valid) return
+
+  loading.value = true
+  try {
+    await userStore.login({ username: form.username, password: form.password })
+    ElMessage.success('登录成功')
+    const redirect = route.query.redirect
+    router.push(typeof redirect === 'string' && redirect ? redirect : '/dashboard')
+  } catch (e) {
+    // 后端错误 message 已由请求拦截器提示，这里无需重复
+  } finally {
     loading.value = false
-  })
+  }
 }
 </script>
 
@@ -33,7 +50,13 @@ async function handleLogin() {
       <template #header>
         <div class="login-title">测试平台</div>
       </template>
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="0" @keyup.enter="handleLogin">
+      <el-form
+        ref="formRef"
+        :model="form"
+        :rules="rules"
+        label-width="0"
+        @keyup.enter="handleLogin"
+      >
         <el-form-item prop="username">
           <el-input v-model="form.username" placeholder="用户名" clearable />
         </el-form-item>
@@ -41,7 +64,12 @@ async function handleLogin() {
           <el-input v-model="form.password" type="password" placeholder="密码" show-password />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :loading="loading" class="login-btn" @click="handleLogin">
+          <el-button
+            type="primary"
+            :loading="loading"
+            class="login-btn"
+            @click="handleLogin"
+          >
             登录
           </el-button>
         </el-form-item>

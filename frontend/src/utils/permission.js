@@ -1,8 +1,7 @@
 /**
  * 按钮级权限：v-perm 指令 + hasPerm 判断
  * 用法：<el-button v-perm="'system:user:add'">新增</el-button>
- *
- * 骨架说明：完整权限码集合由 TASK-004 接入用户信息后填充。
+ * 无对应权限码时移除元素 DOM。
  */
 import { useUserStore } from '@/store/user'
 
@@ -14,7 +13,7 @@ import { useUserStore } from '@/store/user'
 export function hasPerm(perm) {
   if (!perm) return true
   const userStore = useUserStore()
-  return userStore.permissions.includes(perm)
+  return userStore.perms.includes(perm)
 }
 
 /**

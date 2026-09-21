@@ -1,7 +1,7 @@
 /**
  * 路由表
- * - 静态路由：登录 / 主布局 / 错误页
- * - 动态路由：按权限码注册由 TASK-004 实现（见 DESIGN_系统架构.md 4.3）
+ * - 静态路由：登录 / 主布局（含菜单占位子路由）/ 错误页
+ * - meta.perm：访问该路由所需权限码，由 guard.js 校验（无权限跳 403）
  */
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -14,12 +14,55 @@ export const routes = [
     meta: { title: '登录', requiresAuth: false },
   },
   {
-    // 主布局：children 由 TASK-004 按权限动态注册
+    // 主布局：菜单子路由（页面内容后续任务实现）
     path: '/',
     component: () => import('@/layout/MainLayout.vue'),
-    redirect: '/login',
+    redirect: '/dashboard',
     meta: { requiresAuth: true },
-    children: [],
+    children: [
+      {
+        path: 'dashboard',
+        name: 'Dashboard',
+        component: () => import('@/views/dashboard/index.vue'),
+        meta: { title: '工作台', perm: 'dashboard:view' },
+      },
+      {
+        path: 'tool',
+        name: 'Tool',
+        component: () => import('@/views/tool/index.vue'),
+        meta: { title: '工具菜单', perm: 'tool:view' },
+      },
+      {
+        path: 'env',
+        name: 'Environment',
+        component: () => import('@/views/env/index.vue'),
+        meta: { title: '环境管理', perm: 'env:env:list' },
+      },
+      {
+        path: 'case',
+        name: 'Case',
+        component: () => import('@/views/case/index.vue'),
+        meta: { title: '用例管理', perm: 'case:case:list' },
+      },
+      {
+        path: 'system/user',
+        name: 'UserManage',
+        component: () => import('@/views/system/user/index.vue'),
+        meta: { title: '用户管理', perm: 'system:user:list' },
+      },
+      {
+        path: 'system/role',
+        name: 'RoleManage',
+        component: () => import('@/views/system/role/index.vue'),
+        meta: { title: '角色权限', perm: 'system:role:list' },
+      },
+      {
+        path: 'system/log',
+        name: 'OperationLog',
+        component: () => import('@/views/system/log/index.vue'),
+        meta: { title: '操作日志', perm: 'system:log:list' },
+      },
+    ],
   },
   {
     path: '/403',
